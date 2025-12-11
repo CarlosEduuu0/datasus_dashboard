@@ -1,6 +1,5 @@
 --LEMBRETES ==============================================
--- outros em sintomas tem que ter id 10
--- n total de testes pode ser apagada por ser atributo derivado
+-- outros em sintomas tem que ter id 10, condicoes tem que ser 9
 
 -- TABELAS =============================================
 
@@ -112,7 +111,7 @@ CREATE TABLE IF NOT EXISTS notificacao(
 	paciente_id INT NOT NULL,
 	municipio_notificacao_id INT NOT NULL,
 	cbo_id INT,
-	profissional_saude BOOLEAN NOT NULL,
+	profissional_saude BOOLEAN NOT NULL DEFAULT FALSE,
 	profissional_seguranca BOOLEAN,
 	data_notificacao DATE NOT NULL,
 	origem VARCHAR,
