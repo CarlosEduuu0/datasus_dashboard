@@ -256,8 +256,6 @@ CREATE TABLE IF NOT EXISTS dados_clinicos(
 		REFERENCES evolucao_caso(evolucao_caso_id),
 	FOREIGN KEY (classificacao_final_id)
 		REFERENCES classificacao_final(classificacao_final_id),
-	CONSTRAINT chk_data_encerramento
-		CHECK ((data_encerramento IS NOT NULL AND evolucao_caso_id IS NOT NULL) OR (data_encerramento IS NULL AND evolucao_caso_id IS NULL)),
 	CONSTRAINT chk_codigo_vacina
 		CHECK ((codigo_recebeu_vacina IS NOT NULL AND codigo_recebeu_vacina IN (1,2,3)) OR (codigo_recebeu_vacina IS NULL))
 );

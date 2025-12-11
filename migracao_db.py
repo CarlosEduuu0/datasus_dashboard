@@ -44,6 +44,10 @@ MAPEAMENTOS = {
         'CONFIRMADO LABORATORIAL': 'Confirmado Laboratorial',
         'CONFIRMADO CLÍNICO-EPIDEMIOLÓGICO': 'Confirmado Clínico-Epidemiológico',
         'CONFIRMADO CLINICO-EPIDEMIOLOGICO': 'Confirmado Clínico-Epidemiológico',
+        'CONFIRMADO POR CRITÉRIO CLÍNICO': 'Confirmado por Critério Clínico',
+        'CONFIRMADO POR CRITERIO CLINICO': 'Confirmado por Critério Clínico',
+        'CONFIRMADO CLÍNICO-IMAGEM': 'Confirmado Clínico-Imagem',
+        'CONFIRMADO CLINICO-IMAGEM': 'Confirmado Clínico-Imagem',
         'DESCARTADO': 'Descartado',
         'SÍNDROME GRIPAL NÃO ESPECIFICADA': 'Síndrome Gripal Não Especificada',
         'SINDROME GRIPAL NAO ESPECIFICADA': 'Síndrome Gripal Não Especificada',
@@ -864,29 +868,19 @@ class MigradorDadosSUS:
             # Classificação final
             classif_str = str(row['classificacaoFinal']).strip().upper()
             classif_mapeado = self.mapear_valor('classificacao_final', classif_str)
-            classificacao_final_id = classif_map.get(classif_mapeado) if classif_mapeado else None
+            classificacao_final_id = classif_map.get(classif_mapeado.upper()) if classif_mapeado else None
             
             # Evolução caso
             evolucao_str = str(row['evolucaoCaso']).strip().upper()
             evolucao_mapeado = self.mapear_valor('evolucao_caso', evolucao_str)
-            evolucao_caso_id = evolucao_map.get(evolucao_mapeado) if evolucao_mapeado else None
+            evolucao_caso_id = evolucao_map.get(evolucao_mapeado.upper()) if evolucao_mapeado else None
             
             # Data encerramento - VALIDAR: deve ser >= data_inicio_sintomas
             data_encerramento = row['dataEncerramento'] if pd.notna(row['dataEncerramento']) else None
             
-            # VALIDAR CONSTRAINT chk_data_encerramento:
-            # - Se data_encerramento < data_inicio_sintomas → forçar NULL (só se ambas existirem)
-            # - Se data_encerramento existe MAS evolucao_caso_id é NULL → forçar data_encerramento NULL
-            # - Se evolucao_caso_id existe MAS data_encerramento é NULL → forçar evolucao_caso_id NULL
+            # VALIDAR: Se data_encerramento < data_inicio_sintomas → forçar NULL
             if data_encerramento and data_inicio_sintomas and data_encerramento < data_inicio_sintomas:
                 data_encerramento = None
-                evolucao_caso_id = None
-            elif data_encerramento and not evolucao_caso_id:
-                # Tem data mas não tem evolução → forçar data NULL
-                data_encerramento = None
-            elif evolucao_caso_id and not data_encerramento:
-                # Tem evolução mas não tem data → forçar evolução NULL
-                evolucao_caso_id = None
             
             # Especificação outros sintomas/condições
             espec_outros_sintomas = str(row['outrosSintomas']).strip() if pd.notna(row['outrosSintomas']) and str(row['outrosSintomas']).strip().upper() != 'NÃO INFORMADO' else None

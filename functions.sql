@@ -253,6 +253,7 @@ SELECT
     m.municipio_id,
     m.nome AS municipio_nome,
     e.nome AS estado_nome,
+    n.data_notificacao,
     COUNT(n.notificacao_id) AS total_notificacoes,
     COUNT(CASE WHEN cf.descricao LIKE 'Confirmado%' THEN 1 END) AS casos_confirmados,
     COUNT(CASE WHEN cf.descricao = 'Descartado' THEN 1 END) AS casos_descartados,
@@ -264,8 +265,8 @@ INNER JOIN estado e ON m.estado_id = e.estado_id
 LEFT JOIN dados_clinicos dc ON n.notificacao_id = dc.notificacao_id
 LEFT JOIN classificacao_final cf ON dc.classificacao_final_id = cf.classificacao_final_id
 LEFT JOIN evolucao_caso ec ON dc.evolucao_caso_id = ec.evolucao_caso_id
-GROUP BY m.municipio_id, m.nome, e.nome
-ORDER BY total_notificacoes DESC, m.nome;
+GROUP BY m.municipio_id, m.nome, e.nome, n.data_notificacao
+ORDER BY n.data_notificacao DESC, m.nome;
 
 -- vacinação por resultado de teste
 CREATE OR REPLACE VIEW vw_vacinacao_por_resultado AS
