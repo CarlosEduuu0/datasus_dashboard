@@ -271,7 +271,6 @@ ORDER BY n.data_notificacao DESC, m.nome;
 -- vacinação por resultado de teste
 CREATE OR REPLACE VIEW vw_vacinacao_por_resultado AS
 SELECT 
-    m.nome AS municipio_nome,
     CASE 
         WHEN rt.codigo = 1 THEN 'Positivo'
         WHEN rt.codigo = 2 THEN 'Negativo'
@@ -288,12 +287,11 @@ SELECT
          NULLIF(COUNT(DISTINCT n.notificacao_id), 0)::NUMERIC) * 100, 2
     ) AS percentual_vacinados
 FROM notificacao n
-INNER JOIN municipio m ON n.municipio_notificacao_id = m.municipio_id
 LEFT JOIN teste_laboratorial tl ON n.notificacao_id = tl.notificacao_id
 LEFT JOIN resultado_teste rt ON tl.resultado_id = rt.codigo
 LEFT JOIN notificacao_vacina nv ON n.notificacao_id = nv.notificacao_id
-GROUP BY m.nome, rt.codigo
-ORDER BY m.nome, rt.codigo;
+GROUP BY rt.codigo
+ORDER BY rt.codigo;
 
 -- sintomas frequentes entre casos confirmados
 CREATE OR REPLACE VIEW vw_sintomas_frequentes AS

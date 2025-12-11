@@ -446,7 +446,21 @@ def secao_sintomas(municipios, start_date, end_date):
         if len(dff) == 0:
             return html.Div()
         
-        sintomas_counts = dff['sintomas'].value_counts().nlargest(15).reset_index()
+        # Fazer split dos sintomas multivalorados (separados por vírgula)
+        sintomas_individuais = []
+        for sintomas_str in dff['sintomas'].dropna():
+            sintomas_str = str(sintomas_str).strip()
+            if sintomas_str and sintomas_str.upper() != 'NÃO INFORMADO':
+                # Split por vírgula e adicionar cada sintoma individual
+                sintomas_lista = [s.strip() for s in sintomas_str.split(',') if s.strip()]
+                sintomas_individuais.extend(sintomas_lista)
+        
+        if not sintomas_individuais:
+            return html.Div()
+        
+        # Contar frequência de cada sintoma individual
+        sintomas_series = pd.Series(sintomas_individuais)
+        sintomas_counts = sintomas_series.value_counts().nlargest(15).reset_index()
         sintomas_counts.columns = ['sintomas','count']
         
         fig = px.bar(sintomas_counts, y='sintomas', x='count', orientation='h',
